@@ -1,23 +1,23 @@
 package org.swisspush.kobuka.client;
 
-import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.admin.AdminClientConfig;
 
 import java.util.function.Function;
 
-public class BaseProducerConfigBuilder<T extends BaseProducerConfigBuilder<T>> extends AbstractProducerConfigBuilder<T> {
-    public ProducerConfig build() {
-        return new ProducerConfig(configs);
+public class BaseAdminClientConfigBuilder<T extends BaseAdminClientConfigBuilder<T>> extends AbstractAdminClientConfigBuilder<T> {
+    public AdminClientConfig build() {
+        return new AdminClientConfig(configs);
     }
 
-    public <R> R map(Function<BaseProducerConfigBuilder<?>, R> fn) {
+    public <R> R map(Function<BaseAdminClientConfigBuilder<?>, R> fn) {
         return fn.apply(this);
     }
 
     public static <T extends BaseProducerConfigBuilder<T>> BaseProducerConfigBuilder<T> create() {
-        return new BaseProducerConfigBuilder<T>();
+        return new BaseProducerConfigBuilder<>();
     }
 
-    public static <T extends BaseProducerConfigBuilder<T>> BaseProducerConfigBuilder<T> create(BaseProducerConfigBuilder<?> parent) {
+    public static <T extends BaseProducerConfigBuilder<T>> BaseProducerConfigBuilder<T> create(BaseAdminClientConfigBuilder<?> parent) {
         BaseProducerConfigBuilder<T> result = new BaseProducerConfigBuilder<>();
         result.configs.putAll(parent.configs);
         return result;

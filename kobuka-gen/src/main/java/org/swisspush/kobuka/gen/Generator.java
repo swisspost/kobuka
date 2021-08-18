@@ -35,7 +35,7 @@ public class Generator {
                 stream(ProducerConfig.configDef()),
                 rootDir);
         generateBuilder(CLIENT_PACKAGE,
-                "AdminConfigBuilder",
+                "AdminClientConfigBuilder",
                 stream(AdminClientConfig.configDef()),
                 rootDir);
 

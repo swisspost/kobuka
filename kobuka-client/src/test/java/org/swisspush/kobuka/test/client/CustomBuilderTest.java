@@ -1,4 +1,4 @@
-package org.swisspush.kobuka;
+package org.swisspush.kobuka.test.client;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.BytesSerializer;
@@ -7,18 +7,23 @@ import org.junit.jupiter.api.Test;
 import org.swisspush.kobuka.client.BaseProducerConfigBuilder;
 import org.swisspush.kobuka.client.ProducerConfigBuilder;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * This illustrates how users can add "traits" to the builder mechanism.
+ * Traits are typically written by the Kafka experts in the company to add
+ * methods initializing multiple properties in a consistent way.
+ * Note: It is actually the "extension methods for the poor".
+ */
 public class CustomBuilderTest {
 
     /**
-     * Configuration traits about optimization. Written by Kafka experts in the company.
+     * Configuration traits about optimization.
      */
     @SuppressWarnings("unchecked")
-    interface OptimizationExtensions<T extends OptimizationExtensions<T>> extends ProducerConfigBuilder<T> {
+    interface OptimizationTraits<T extends OptimizationTraits<T>> extends ProducerConfigBuilder<T> {
 
         default T withBetterThroughput() {
             acks("0");
@@ -34,10 +39,10 @@ public class CustomBuilderTest {
     }
 
     /**
-     * Configuration traits about serialization. Written by Kafka experts in the company.
+     * Configuration traits about serialization.
      */
     @SuppressWarnings("unchecked")
-    interface SerializationExtensions<T extends ProducerConfigBuilder<T>>  extends ProducerConfigBuilder<T> {
+    interface SerializationTraits<T extends ProducerConfigBuilder<T>>  extends ProducerConfigBuilder<T> {
 
         default T withDefaultSerialization() {
             keySerializer(StringSerializer.class);
@@ -54,22 +59,23 @@ public class CustomBuilderTest {
     }
 
     /**
-     * Our custom configuration builder with the two traits above. Typically in the application template.
+     * Our custom configuration builder bundling the two traits above. Typically in the application template.
      */
     static class CustomProducerConfigBuilder extends BaseProducerConfigBuilder<CustomProducerConfigBuilder> implements
-            OptimizationExtensions<CustomProducerConfigBuilder>,
-            SerializationExtensions<CustomProducerConfigBuilder>{}
+            OptimizationTraits<CustomProducerConfigBuilder>,
+            SerializationTraits<CustomProducerConfigBuilder> {}
 
 
     @Test
     public void testSimpleProducerConfig() {
 
-        // This is what the developers will write
+        // Developers just use the fluent API with all additional methods available.
 
         ProducerConfig config = new CustomProducerConfigBuilder()
-                .bootstrapServers("localhost:9092") // from
-                .withBetterThroughput()
+                .bootstrapServers("localhost:9092")
                 .withDefaultSerialization()
+                .batchSize(2)
+                .withBetterThroughput()
                 .build();
 
         assertEquals(config.getList(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG), Collections.singletonList("localhost:9092"));
