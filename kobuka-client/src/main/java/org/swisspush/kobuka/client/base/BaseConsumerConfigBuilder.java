@@ -27,7 +27,7 @@ public class BaseConsumerConfigBuilder<T extends BaseConsumerConfigBuilder<T> & 
         return result;
     }
 
-    public Map<String, Object> build() {
+    public Map<String, Object> get() {
         return configs;
     }
 

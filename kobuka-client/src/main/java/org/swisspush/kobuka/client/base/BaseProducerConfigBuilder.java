@@ -26,7 +26,7 @@ public class BaseProducerConfigBuilder<T extends BaseProducerConfigBuilder<T> & 
         return result;
     }
 
-    public Map<String, Object> build() {
+    public Map<String, Object> get() {
         return configs;
     }
 

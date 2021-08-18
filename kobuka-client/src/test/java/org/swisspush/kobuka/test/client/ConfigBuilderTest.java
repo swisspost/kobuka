@@ -122,7 +122,7 @@ public class ConfigBuilderTest {
                         .keyDeserializer(StringDeserializer.class)
                         .valueDeserializer(StringDeserializer.class)
                         .addProperty("custom", "prop")
-                        .build();
+                        .get();
 
         assertEquals("prop", config.get("custom"));
     }

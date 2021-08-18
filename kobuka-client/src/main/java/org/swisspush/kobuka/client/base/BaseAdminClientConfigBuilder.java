@@ -8,7 +8,8 @@ import java.util.function.Function;
 /**
  * Base class for custom builders. Do not use directly.
  */
-public class BaseAdminClientConfigBuilder<T extends BaseAdminClientConfigBuilder<T>> extends AbstractAdminClientConfigBuilder<T> {
+public class BaseAdminClientConfigBuilder<T extends BaseAdminClientConfigBuilder<T>>
+        extends AbstractAdminClientConfigBuilder<T> implements BuilderFunctions<T> {
 
     public static <T extends BaseProducerConfigBuilder<T>> BaseProducerConfigBuilder<T> create() {
         return new BaseProducerConfigBuilder<>();
@@ -26,7 +27,7 @@ public class BaseAdminClientConfigBuilder<T extends BaseAdminClientConfigBuilder
         return result;
     }
 
-    public Map<String, Object> build() {
+    public Map<String, Object> get() {
         return configs;
     }
 
