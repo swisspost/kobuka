@@ -105,10 +105,10 @@ public class Generator {
     }
 
     private static void generateMethod(TypeSpec.Builder interfaceBuilder, TypeSpec.Builder classBuilder, ConfigDef.ConfigKey key, TypeName type) {
-        interfaceBuilder.addMethod(methodBuilder(toCamelCase(key.name))
+        interfaceBuilder.addMethod(methodBuilder(toCamelCase(key.displayName))
                 .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                 .addJavadoc(
-                        "<b>"+key.name+"</b><p>\n"+
+                        "<b>"+key.displayName+"</b><p>\n"+
                         key.documentation.replaceAll("\\. ", ".<p>") +
                                 "\n<p><b>Default:</b> "+ renderDefault(key) +
                                 "\n<p><b>Valid Values:</b> "+ (key.validator != null ? key.validator.toString() : "")+
@@ -122,7 +122,7 @@ public class Generator {
                 .addModifiers(Modifier.PUBLIC)
                 .returns(TypeVariableName.get("T"))
                 .addParameter(type, "value")
-                .addStatement("configs.put($S, value)", key)
+                .addStatement("configs.put($S, value)", key.name)
                 .addStatement("return (T)this")
                 .build());
     }

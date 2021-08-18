@@ -13,6 +13,15 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class ConfigBuilderTest {
 
+    @Test
+    public void testMinimalConfig() {
+        BaseConsumerConfigBuilder.create()
+                .bootstrapServers("localhost:9092,otherhost:9092")
+                .keyDeserializer(StringDeserializer.class)
+                .valueDeserializer(StringDeserializer.class)
+                .build();
+    }
+
     /**
      * This illustrates how to reuse parts of configuration.
      */
