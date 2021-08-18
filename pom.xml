@@ -33,7 +33,7 @@
 
   <modules>
     <module>kobuka-gen</module>
-    <module>kobuka-core</module>
+    <module>kobuka-client</module>
   </modules>
 
   <properties>

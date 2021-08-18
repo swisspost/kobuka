@@ -1,4 +1,4 @@
-package org.swisspush.kobuka;
+package org.swisspush.kobuka.gen;
 
 import com.squareup.javapoet.*;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -33,20 +33,20 @@ public class Generator {
                 Modifier.PRIVATE).build());
 
         ConsumerConfig.configDef().configKeys().forEach((key, value) -> {
-
             builder.addMethod(methodBuilder(convert2CamelCase(key))
                     .addModifiers(Modifier.PUBLIC)
-                    .returns(ClassName.get("org.swisspush.kobuka", "BaseConsumerConfigBuilder"))
+                    .addJavadoc(value.documentation.replaceAll("\\. ", ".<br>\n"))
+                    .returns(ClassName.get("org.swisspush.kobuka.client", "BaseConsumerConfigBuilder"))
                     .addParameter(resolveType(value.type), "value")
                     .addStatement("configs.put($S, value)", key)
                     .addStatement("return this")
                     .build());
         });
 
-        JavaFile javaFile = JavaFile.builder("org.swisspush.kobuka", builder.build())
+        JavaFile javaFile = JavaFile.builder("org.swisspush.kobuka.client", builder.build())
                 .build();
 
-        javaFile.writeTo(Paths.get(root+"/target/generated-sources/kobuka/org/swisspush/kobuka/BaseConsumerConfigBuilder.java"));
+        javaFile.writeTo(Paths.get(root+"/target/generated-sources/kobuka/org/swisspush/kobuka/client/BaseConsumerConfigBuilder.java"));
         javaFile.writeTo(System.out);
     }
 

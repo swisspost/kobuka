@@ -1,4 +1,4 @@
-package org.swisspush.kobuka;
+package org.swisspush.kobuka.client;
 
 public class ConsumerConfigBuilder extends BaseConsumerConfigBuilder {
 }

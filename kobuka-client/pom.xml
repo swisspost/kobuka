@@ -9,7 +9,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>kobuka-core</artifactId>
+  <artifactId>kobuka-client</artifactId>
 
   <build>
     <plugins>
@@ -18,7 +18,7 @@
         <artifactId>exec-maven-plugin</artifactId>
         <version>3.0.0</version>
         <configuration>
-          <mainClass>org.swisspush.kobuka.Generator</mainClass>
+          <mainClass>org.swisspush.kobuka.gen.Generator</mainClass>
           <includePluginDependencies>true</includePluginDependencies>
           <arguments>
             <argument>${project.basedir}</argument>
