@@ -1,9 +1,13 @@
-package org.swisspush.kobuka.client;
+package org.swisspush.kobuka.client.base;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 
+import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * Base class for custom builders. Do not use directly.
+ */
 public class BaseConsumerConfigBuilder<T extends BaseConsumerConfigBuilder<T>> extends AbstractConsumerConfigBuilder<T> {
 
     public static <T extends BaseConsumerConfigBuilder<T>> BaseConsumerConfigBuilder<T> create() {
@@ -22,11 +26,11 @@ public class BaseConsumerConfigBuilder<T extends BaseConsumerConfigBuilder<T>> e
         return result;
     }
 
-    public ConsumerConfig build() {
-        return new ConsumerConfig(configs);
+    public Map<String, Object> build() {
+        return configs;
     }
 
-    public <R> R build(Function<ConsumerConfig, R> fn) {
+    public <R> R build(Function<Map<String, Object> , R> fn) {
         return fn.apply(build());
     }
 

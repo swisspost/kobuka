@@ -1,10 +1,11 @@
 package org.swisspush.kobuka.test.client;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.Test;
-import org.swisspush.kobuka.client.BaseCommonClientConfigBuilder;
-import org.swisspush.kobuka.client.BaseConsumerConfigBuilder;
+import org.swisspush.kobuka.client.CommonClientConfigBuilder;
+import org.swisspush.kobuka.client.ConsumerConfigBuilder;
 
 import java.util.Arrays;
 
@@ -15,11 +16,15 @@ public class ConfigBuilderTest {
 
     @Test
     public void testMinimalConfig() {
-        BaseConsumerConfigBuilder.create()
-                .bootstrapServers("localhost:9092,otherhost:9092")
-                .keyDeserializer(StringDeserializer.class)
-                .valueDeserializer(StringDeserializer.class)
-                .build();
+        KafkaConsumer<String, String> consumer =
+                new ConsumerConfigBuilder()
+                        .bootstrapServers("localhost:9092,otherhost:9092")
+                        .keyDeserializer(StringDeserializer.class)
+                        .valueDeserializer(StringDeserializer.class)
+                        .groupId("hello")
+                        .build(KafkaConsumer::new);
+
+        assertEquals("hello", consumer.groupMetadata().groupId());
     }
 
     /**
@@ -28,22 +33,22 @@ public class ConfigBuilderTest {
     @Test
     public void testCopy() {
 
-        BaseConsumerConfigBuilder<?> original =
-                BaseConsumerConfigBuilder.create()
+        ConsumerConfigBuilder original =
+                new ConsumerConfigBuilder()
                         .bootstrapServers("localhost:9092,otherhost:9092")
                         .keyDeserializer(StringDeserializer.class)
                         .valueDeserializer(StringDeserializer.class);
 
         ConsumerConfig config =
                 original
-                        .map(BaseConsumerConfigBuilder::create)
+                        .map(ConsumerConfigBuilder::create)
                         .autoCommitIntervalMs(1234)
-                        .build();
+                        .build(ConsumerConfig::new);
 
         assertEquals(Arrays.asList("localhost:9092", "otherhost:9092"),
                 config.getList(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
         assertEquals(1234, config.getInt(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG));
-        assertNotEquals(1234, original.build().getInt(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG));
+        assertNotEquals(1234, original.build(ConsumerConfig::new).getInt(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG));
     }
 
     /**
@@ -52,16 +57,16 @@ public class ConfigBuilderTest {
     @Test
     public void testInheritance() {
 
-        BaseCommonClientConfigBuilder<?> commonConfigBuilder =
-                BaseCommonClientConfigBuilder.create()
+        CommonClientConfigBuilder commonConfigBuilder =
+                new CommonClientConfigBuilder()
                         .bootstrapServers("localhost:9092,otherhost:9092");
 
         ConsumerConfig config =
                 commonConfigBuilder
-                        .map(BaseConsumerConfigBuilder::create)
+                        .map(ConsumerConfigBuilder::create)
                         .keyDeserializer(StringDeserializer.class)
                         .valueDeserializer(StringDeserializer.class)
-                        .build();
+                        .build(ConsumerConfig::new);
 
         assertEquals(Arrays.asList("localhost:9092", "otherhost:9092"),
                 config.getList(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
@@ -73,20 +78,18 @@ public class ConfigBuilderTest {
     @Test
     public void testStringOverload() {
         ConsumerConfig conf1 =
-                BaseConsumerConfigBuilder
-                        .create()
+                new ConsumerConfigBuilder()
                         .bootstrapServers("localhost:9092,otherhost:9092")
                         .keyDeserializer(StringDeserializer.class)
                         .valueDeserializer(StringDeserializer.class)
-                        .build();
+                        .build(ConsumerConfig::new);
 
         ConsumerConfig conf2 =
-                BaseConsumerConfigBuilder
-                        .create()
+                new ConsumerConfigBuilder()
                         .bootstrapServers(Arrays.asList("localhost:9092", "otherhost:9092"))
                         .keyDeserializer(StringDeserializer.class)
                         .valueDeserializer(StringDeserializer.class)
-                        .build();
+                        .build(ConsumerConfig::new);
 
         assertEquals(
                 conf1.getList(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG),

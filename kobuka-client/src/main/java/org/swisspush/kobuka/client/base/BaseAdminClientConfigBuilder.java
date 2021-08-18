@@ -1,9 +1,13 @@
-package org.swisspush.kobuka.client;
+package org.swisspush.kobuka.client.base;
 
 import org.apache.kafka.clients.admin.AdminClientConfig;
 
+import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * Base class for custom builders. Do not use directly.
+ */
 public class BaseAdminClientConfigBuilder<T extends BaseAdminClientConfigBuilder<T>> extends AbstractAdminClientConfigBuilder<T> {
 
     public static <T extends BaseProducerConfigBuilder<T>> BaseProducerConfigBuilder<T> create() {
@@ -22,14 +26,13 @@ public class BaseAdminClientConfigBuilder<T extends BaseAdminClientConfigBuilder
         return result;
     }
 
-    public AdminClientConfig build() {
-        return new AdminClientConfig(configs);
+    public Map<String, Object> build() {
+        return configs;
     }
 
-    public <R> R build(Function<AdminClientConfig, R> fn) {
+    public <R> R build(Function<Map<String, Object> , R> fn) {
         return fn.apply(build());
     }
-
     public <R> R map(Function<BaseAdminClientConfigBuilder<?>, R> fn) {
         return fn.apply(this);
     }

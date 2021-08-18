@@ -1,9 +1,13 @@
-package org.swisspush.kobuka.client;
+package org.swisspush.kobuka.client.base;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 
+import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * Base class for custom builders. Do not use directly.
+ */
 public class BaseProducerConfigBuilder<T extends BaseProducerConfigBuilder<T>> extends AbstractProducerConfigBuilder<T> {
     public static <T extends BaseProducerConfigBuilder<T>> BaseProducerConfigBuilder<T> create() {
         return new BaseProducerConfigBuilder<T>();
@@ -21,14 +25,13 @@ public class BaseProducerConfigBuilder<T extends BaseProducerConfigBuilder<T>> e
         return result;
     }
 
-    public ProducerConfig build() {
-        return new ProducerConfig(configs);
+    public Map<String, Object> build() {
+        return configs;
     }
 
-    public <R> R build(Function<ProducerConfig, R> fn) {
+    public <R> R build(Function<Map<String, Object> , R> fn) {
         return fn.apply(build());
     }
-
     public <R> R map(Function<BaseProducerConfigBuilder<?>, R> fn) {
         return fn.apply(this);
     }

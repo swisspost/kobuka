@@ -20,21 +20,21 @@ import static com.squareup.javapoet.MethodSpec.methodBuilder;
 
 public class Generator {
 
-    public final static String CLIENT_PACKAGE = "org.swisspush.kobuka.client";
+    public final static String CLIENT_PACKAGE = "org.swisspush.kobuka.client.base";
 
     public static void main(String args[]) throws IOException {
         String rootDir = args[0];
 
         generateBuilder(CLIENT_PACKAGE,
-                "ConsumerConfigBuilder",
+                "ConsumerConfig",
                 stream(ConsumerConfig.configDef()),
                 rootDir);
         generateBuilder(CLIENT_PACKAGE,
-                "ProducerConfigBuilder",
+                "ProducerConfig",
                 stream(ProducerConfig.configDef()),
                 rootDir);
         generateBuilder(CLIENT_PACKAGE,
-                "AdminClientConfigBuilder",
+                "AdminClientConfig",
                 stream(AdminClientConfig.configDef()),
                 rootDir);
 
@@ -47,17 +47,18 @@ public class Generator {
         Stream<Map.Entry<String, ConfigDef.ConfigKey>> commonConfigMap = AdminClientConfig.configDef().configKeys().entrySet().stream()
                 .filter(entry -> commonKeys.contains(entry.getKey()));
 
-        generateBuilder(CLIENT_PACKAGE, "CommonClientConfigBuilder", commonConfigMap, rootDir);
+        generateBuilder(CLIENT_PACKAGE, "CommonClientConfig", commonConfigMap, rootDir);
     }
 
     private static Stream<Map.Entry<String, ConfigDef.ConfigKey>> stream(ConfigDef configDef) {
         return configDef.configKeys().entrySet().stream();
     }
 
-    private static void generateBuilder(String packageName, String interfaceName, Stream<Map.Entry<String, ConfigDef.ConfigKey>> definitions, String rootDir)
+    private static void generateBuilder(String packageName, String baseName, Stream<Map.Entry<String, ConfigDef.ConfigKey>> definitions, String rootDir)
             throws IOException {
 
-        String className = "Abstract" + interfaceName;
+        String interfaceName = baseName + "Fields";
+        String className = "Abstract" + baseName + "Builder";
 
         TypeSpec.Builder interfaceBuilder = TypeSpec.interfaceBuilder(interfaceName)
                 .addModifiers(Modifier.PUBLIC)

@@ -4,8 +4,8 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.BytesSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
-import org.swisspush.kobuka.client.BaseProducerConfigBuilder;
-import org.swisspush.kobuka.client.ProducerConfigBuilder;
+import org.swisspush.kobuka.client.base.BaseProducerConfigBuilder;
+import org.swisspush.kobuka.client.base.ProducerConfigFields;
 
 import java.util.Collections;
 
@@ -29,7 +29,7 @@ public class CustomBuilderTest {
                 .withDefaultSerialization()
                 .batchSize(2)
                 .withBetterThroughput()
-                .build();
+                .build(ProducerConfig::new);
 
         assertEquals(config.getList(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG), Collections.singletonList("localhost:9092"));
         assertEquals(config.getClass(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG), StringSerializer.class);
@@ -42,7 +42,7 @@ public class CustomBuilderTest {
      * Configuration traits about optimization.
      */
     @SuppressWarnings("unchecked")
-    interface OptimizationTraits<T extends OptimizationTraits<T>> extends ProducerConfigBuilder<T> {
+    interface OptimizationTraits<T extends OptimizationTraits<T>> extends ProducerConfigFields<T> {
 
         default T withBetterThroughput() {
             acks("0");
@@ -61,7 +61,7 @@ public class CustomBuilderTest {
      * Configuration traits about serialization.
      */
     @SuppressWarnings("unchecked")
-    interface SerializationTraits<T extends ProducerConfigBuilder<T>> extends ProducerConfigBuilder<T> {
+    interface SerializationTraits<T extends SerializationTraits<T>> extends ProducerConfigFields<T> {
 
         default T withDefaultSerialization() {
             keySerializer(StringSerializer.class);
