@@ -8,7 +8,8 @@ import java.util.function.Function;
 /**
  * Base class for custom builders. Do not use directly.
  */
-public class BaseProducerConfigBuilder<T extends BaseProducerConfigBuilder<T>> extends AbstractProducerConfigBuilder<T> {
+public class BaseProducerConfigBuilder<T extends BaseProducerConfigBuilder<T> & BuilderFunctions<T>>
+        extends AbstractProducerConfigBuilder<T> implements BuilderFunctions<T> {
     public static <T extends BaseProducerConfigBuilder<T>> BaseProducerConfigBuilder<T> create() {
         return new BaseProducerConfigBuilder<T>();
     }
@@ -29,9 +30,6 @@ public class BaseProducerConfigBuilder<T extends BaseProducerConfigBuilder<T>> e
         return configs;
     }
 
-    public <R> R build(Function<Map<String, Object> , R> fn) {
-        return fn.apply(build());
-    }
     public <R> R map(Function<BaseProducerConfigBuilder<?>, R> fn) {
         return fn.apply(this);
     }

@@ -30,9 +30,6 @@ public class BaseAdminClientConfigBuilder<T extends BaseAdminClientConfigBuilder
         return configs;
     }
 
-    public <R> R build(Function<Map<String, Object> , R> fn) {
-        return fn.apply(build());
-    }
     public <R> R map(Function<BaseAdminClientConfigBuilder<?>, R> fn) {
         return fn.apply(this);
     }

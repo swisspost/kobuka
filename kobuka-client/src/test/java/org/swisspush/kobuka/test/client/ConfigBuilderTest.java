@@ -11,6 +11,7 @@ import org.swisspush.kobuka.client.ConsumerConfigBuilder;
 import org.swisspush.kobuka.client.ProducerConfigBuilder;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -19,6 +20,7 @@ public class ConfigBuilderTest {
 
     @Test
     public void testMinimalConfig() {
+
         KafkaConsumer<String, String> consumer =
                 new ConsumerConfigBuilder()
                         .bootstrapServers("localhost:9092,otherhost:9092")
@@ -89,6 +91,7 @@ public class ConfigBuilderTest {
      */
     @Test
     public void testStringOverload() {
+
         ConsumerConfig conf1 =
                 new ConsumerConfigBuilder()
                         .bootstrapServers("localhost:9092,otherhost:9092")
@@ -108,5 +111,19 @@ public class ConfigBuilderTest {
         assertEquals(
                 conf1.getList(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG),
                 conf2.getList(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
+    }
+
+    @Test
+    public void testCustomProperty() {
+
+        Map<String, Object> config =
+                new ConsumerConfigBuilder()
+                        .bootstrapServers("localhost:9092,otherhost:9092")
+                        .keyDeserializer(StringDeserializer.class)
+                        .valueDeserializer(StringDeserializer.class)
+                        .addProperty("custom", "prop")
+                        .build();
+
+        assertEquals("prop", config.get("custom"));
     }
 }
