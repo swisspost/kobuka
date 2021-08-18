@@ -74,24 +74,24 @@ public class Generator {
                         .initializer(CodeBlock.builder().add("new $T<>()", HashMap.class).build())
                         .build());
 
-        definitions.forEach(entry -> {
+        definitions
+                .filter(entry -> !entry.getValue().internalConfig)
+                .forEach(entry -> {
 
-            generateMethod(
-                    interfaceBuilder,
-                    classBuilder,
-                    entry.getKey(),
-                    resolveType(entry.getValue().type),
-                    entry.getValue().documentation);
+                    generateMethod(
+                            interfaceBuilder,
+                            classBuilder,
+                            entry.getValue(),
+                            resolveType(entry.getValue().type));
 
-            // List types can also be comma-separated strings
-            // Password can also be a string
-            if (entry.getValue().type == ConfigDef.Type.LIST || entry.getValue().type == ConfigDef.Type.PASSWORD) {
-                generateMethod(
-                        interfaceBuilder,
-                        classBuilder,
-                        entry.getKey(),
-                        ClassName.get(String.class),
-                        entry.getValue().documentation);
+                    // List types can also be comma-separated strings
+                    // Password can also be a string
+                    if (entry.getValue().type == ConfigDef.Type.LIST || entry.getValue().type == ConfigDef.Type.PASSWORD) {
+                        generateMethod(
+                                interfaceBuilder,
+                                classBuilder,
+                                entry.getValue(),
+                                ClassName.get(String.class));
             }
         });
 
@@ -104,15 +104,21 @@ public class Generator {
         classJavaFile.writeTo(Paths.get(rootDir + "/target/generated-sources/kobuka/" + packageName.replaceAll("\\.", "/") + "/" + className + ".java"));
     }
 
-    private static void generateMethod(TypeSpec.Builder interfaceBuilder, TypeSpec.Builder classBuilder, String key, TypeName type, String documentation) {
-        interfaceBuilder.addMethod(methodBuilder(convert2CamelCase(key))
+    private static void generateMethod(TypeSpec.Builder interfaceBuilder, TypeSpec.Builder classBuilder, ConfigDef.ConfigKey key, TypeName type) {
+        interfaceBuilder.addMethod(methodBuilder(toCamelCase(key.name))
                 .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                .addJavadoc(documentation.replaceAll("\\. ", ".<br>\n"))
+                .addJavadoc(
+                        "<b>"+key.name+"</b><p>\n"+
+                        key.documentation.replaceAll("\\. ", ".<p>") +
+                                "\n<p><b>Default:</b> "+ renderDefault(key) +
+                                "\n<p><b>Valid Values:</b> "+ (key.validator != null ? key.validator.toString() : "")+
+                                "\n<p><b>Importance:</b> "+ key.importance.toString().toLowerCase(Locale.ROOT))
+
                 .returns(TypeVariableName.get("T"))
                 .addParameter(type, "value")
                 .build());
 
-        classBuilder.addMethod(methodBuilder(convert2CamelCase(key))
+        classBuilder.addMethod(methodBuilder(toCamelCase(key.name))
                 .addModifiers(Modifier.PUBLIC)
                 .returns(TypeVariableName.get("T"))
                 .addParameter(type, "value")
@@ -144,7 +150,71 @@ public class Generator {
         }
     }
 
-    private static String convert2CamelCase(String str) {
+    private static String renderDefault(ConfigDef.ConfigKey key) {
+        if (key.hasDefault()) {
+            if (key.defaultValue == null)
+                return "null";
+            String defaultValueStr = ConfigDef.convertToString(key.defaultValue, key.type);
+            if (defaultValueStr.isEmpty())
+                return "\"\"";
+            else {
+                String suffix = "";
+                if (key.name.endsWith(".bytes")) {
+                    suffix = niceMemoryUnits(((Number) key.defaultValue).longValue());
+                } else if (key.name.endsWith(".ms")) {
+                    suffix = niceTimeUnits(((Number) key.defaultValue).longValue());
+                }
+                return defaultValueStr + suffix;
+            }
+        } else
+            return "";
+    }
+
+    private static String niceMemoryUnits(long bytes) {
+        long value = bytes;
+        int i = 0;
+        while (value != 0 && i < 4) {
+            if (value % 1024L == 0) {
+                value /= 1024L;
+                i++;
+            } else {
+                break;
+            }
+        }
+        switch (i) {
+            case 1:
+                return " (" + value + " kibibyte" + (value == 1 ? ")" : "s)");
+            case 2:
+                return " (" + value + " mebibyte" + (value == 1 ? ")" : "s)");
+            case 3:
+                return " (" + value + " gibibyte" + (value == 1 ? ")" : "s)");
+            case 4:
+                return " (" + value + " tebibyte" + (value == 1 ? ")" : "s)");
+            default:
+                return "";
+        }
+    }
+
+    private static String niceTimeUnits(long millis) {
+        long value = millis;
+        long[] divisors = {1000, 60, 60, 24};
+        String[] units = {"second", "minute", "hour", "day"};
+        int i = 0;
+        while (value != 0 && i < 4) {
+            if (value % divisors[i] == 0) {
+                value /= divisors[i];
+                i++;
+            } else {
+                break;
+            }
+        }
+        if (i > 0) {
+            return " (" + value + " " + units[i - 1] + (value > 1 ? "s)" : ")");
+        }
+        return "";
+    }
+
+    private static String toCamelCase(String str) {
         Matcher matcher = Pattern.compile("[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+").matcher(str);
         List<String> matched = new ArrayList<>();
         while (matcher.find()) {
