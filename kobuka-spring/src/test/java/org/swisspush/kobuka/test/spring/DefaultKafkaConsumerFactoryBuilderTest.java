@@ -10,7 +10,7 @@ import org.swisspush.kobuka.test.spring.base.BaseDefaultKafkaConsumerFactoryBuil
 import java.util.Map;
 import java.util.function.Supplier;
 
-class DefaultKafkaConsumerFactoryBuilderTest {
+public class DefaultKafkaConsumerFactoryBuilderTest {
 
     @Test
     public void testSimpleBuilder() {
