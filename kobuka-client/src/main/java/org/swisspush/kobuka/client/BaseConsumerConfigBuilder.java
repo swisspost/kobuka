@@ -5,13 +5,6 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import java.util.function.Function;
 
 public class BaseConsumerConfigBuilder<T extends BaseConsumerConfigBuilder<T>> extends AbstractConsumerConfigBuilder<T> {
-    public ConsumerConfig build() {
-        return new ConsumerConfig(configs);
-    }
-
-    public <R> R map(Function<BaseConsumerConfigBuilder<?>, R> fn) {
-        return fn.apply(this);
-    }
 
     public static <T extends BaseConsumerConfigBuilder<T>> BaseConsumerConfigBuilder<T> create() {
         return new BaseConsumerConfigBuilder<T>();
@@ -27,5 +20,17 @@ public class BaseConsumerConfigBuilder<T extends BaseConsumerConfigBuilder<T>> e
         BaseConsumerConfigBuilder<T> result = new BaseConsumerConfigBuilder<>();
         result.configs.putAll(parent.configs);
         return result;
+    }
+
+    public ConsumerConfig build() {
+        return new ConsumerConfig(configs);
+    }
+
+    public <R> R build(Function<ConsumerConfig, R> fn) {
+        return fn.apply(build());
+    }
+
+    public <R> R map(Function<BaseConsumerConfigBuilder<?>, R> fn) {
+        return fn.apply(this);
     }
 }

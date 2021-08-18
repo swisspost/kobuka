@@ -19,53 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class CustomBuilderTest {
 
-    /**
-     * Configuration traits about optimization.
-     */
-    @SuppressWarnings("unchecked")
-    interface OptimizationTraits<T extends OptimizationTraits<T>> extends ProducerConfigBuilder<T> {
-
-        default T withBetterThroughput() {
-            acks("0");
-            maxInFlightRequestsPerConnection(1000);
-            return (T)this;
-        }
-
-        default T withBetterDurability() {
-            acks("all");
-            maxInFlightRequestsPerConnection(1);
-            return (T)this;
-        }
-    }
-
-    /**
-     * Configuration traits about serialization.
-     */
-    @SuppressWarnings("unchecked")
-    interface SerializationTraits<T extends ProducerConfigBuilder<T>>  extends ProducerConfigBuilder<T> {
-
-        default T withDefaultSerialization() {
-            keySerializer(StringSerializer.class);
-            valueSerializer(StringSerializer.class);
-            return (T)this;
-        }
-
-        default T withBinarySerialization() {
-            keySerializer(StringSerializer.class);
-            valueSerializer(BytesSerializer.class);
-            return (T)this;
-        }
-
-    }
-
-    /**
-     * Our custom configuration builder bundling the two traits above. Typically in the application template.
-     */
-    static class CustomProducerConfigBuilder extends BaseProducerConfigBuilder<CustomProducerConfigBuilder> implements
-            OptimizationTraits<CustomProducerConfigBuilder>,
-            SerializationTraits<CustomProducerConfigBuilder> {}
-
-
     @Test
     public void testSimpleProducerConfig() {
 
@@ -83,5 +36,52 @@ public class CustomBuilderTest {
         assertEquals(config.getClass(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG), StringSerializer.class);
         assertEquals(config.getString(ProducerConfig.ACKS_CONFIG), "0");
         assertEquals(config.getInt(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION), 1000);
+    }
+
+    /**
+     * Configuration traits about optimization.
+     */
+    @SuppressWarnings("unchecked")
+    interface OptimizationTraits<T extends OptimizationTraits<T>> extends ProducerConfigBuilder<T> {
+
+        default T withBetterThroughput() {
+            acks("0");
+            maxInFlightRequestsPerConnection(1000);
+            return (T) this;
+        }
+
+        default T withBetterDurability() {
+            acks("all");
+            maxInFlightRequestsPerConnection(1);
+            return (T) this;
+        }
+    }
+
+    /**
+     * Configuration traits about serialization.
+     */
+    @SuppressWarnings("unchecked")
+    interface SerializationTraits<T extends ProducerConfigBuilder<T>> extends ProducerConfigBuilder<T> {
+
+        default T withDefaultSerialization() {
+            keySerializer(StringSerializer.class);
+            valueSerializer(StringSerializer.class);
+            return (T) this;
+        }
+
+        default T withBinarySerialization() {
+            keySerializer(StringSerializer.class);
+            valueSerializer(BytesSerializer.class);
+            return (T) this;
+        }
+
+    }
+
+    /**
+     * Our custom configuration builder bundling the two traits above. Typically in the application template.
+     */
+    static class CustomProducerConfigBuilder extends BaseProducerConfigBuilder<CustomProducerConfigBuilder> implements
+            OptimizationTraits<CustomProducerConfigBuilder>,
+            SerializationTraits<CustomProducerConfigBuilder> {
     }
 }

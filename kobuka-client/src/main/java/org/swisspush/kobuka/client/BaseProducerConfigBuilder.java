@@ -5,14 +5,6 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import java.util.function.Function;
 
 public class BaseProducerConfigBuilder<T extends BaseProducerConfigBuilder<T>> extends AbstractProducerConfigBuilder<T> {
-    public ProducerConfig build() {
-        return new ProducerConfig(configs);
-    }
-
-    public <R> R map(Function<BaseProducerConfigBuilder<?>, R> fn) {
-        return fn.apply(this);
-    }
-
     public static <T extends BaseProducerConfigBuilder<T>> BaseProducerConfigBuilder<T> create() {
         return new BaseProducerConfigBuilder<T>();
     }
@@ -27,5 +19,17 @@ public class BaseProducerConfigBuilder<T extends BaseProducerConfigBuilder<T>> e
         BaseProducerConfigBuilder<T> result = new BaseProducerConfigBuilder<>();
         result.configs.putAll(parent.configs);
         return result;
+    }
+
+    public ProducerConfig build() {
+        return new ProducerConfig(configs);
+    }
+
+    public <R> R build(Function<ProducerConfig, R> fn) {
+        return fn.apply(build());
+    }
+
+    public <R> R map(Function<BaseProducerConfigBuilder<?>, R> fn) {
+        return fn.apply(this);
     }
 }

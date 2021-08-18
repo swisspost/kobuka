@@ -6,11 +6,9 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.common.config.types.Password;
-import org.apache.kafka.common.serialization.StringSerializer;
 
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -23,6 +21,7 @@ import static com.squareup.javapoet.MethodSpec.methodBuilder;
 public class Generator {
 
     public final static String CLIENT_PACKAGE = "org.swisspush.kobuka.client";
+
     public static void main(String args[]) throws IOException {
         String rootDir = args[0];
 
@@ -58,7 +57,7 @@ public class Generator {
     private static void generateBuilder(String packageName, String interfaceName, Stream<Map.Entry<String, ConfigDef.ConfigKey>> definitions, String rootDir)
             throws IOException {
 
-        String className = "Abstract"+interfaceName;
+        String className = "Abstract" + interfaceName;
 
         TypeSpec.Builder interfaceBuilder = TypeSpec.interfaceBuilder(interfaceName)
                 .addModifiers(Modifier.PUBLIC)
@@ -86,7 +85,7 @@ public class Generator {
 
             // List types can also be comma-separated strings
             // Password can also be a string
-            if(entry.getValue().type == ConfigDef.Type.LIST || entry.getValue().type == ConfigDef.Type.PASSWORD) {
+            if (entry.getValue().type == ConfigDef.Type.LIST || entry.getValue().type == ConfigDef.Type.PASSWORD) {
                 generateMethod(
                         interfaceBuilder,
                         classBuilder,
@@ -101,8 +100,8 @@ public class Generator {
         JavaFile classJavaFile = JavaFile.builder(packageName, classBuilder.build())
                 .build();
 
-        interfaceJavaFile.writeTo(Paths.get(rootDir + "/target/generated-sources/kobuka/" + packageName.replaceAll("\\.", "/") + "/"+interfaceName+".java"));
-        classJavaFile.writeTo(Paths.get(rootDir + "/target/generated-sources/kobuka/" + packageName.replaceAll("\\.", "/") + "/"+className+".java"));
+        interfaceJavaFile.writeTo(Paths.get(rootDir + "/target/generated-sources/kobuka/" + packageName.replaceAll("\\.", "/") + "/" + interfaceName + ".java"));
+        classJavaFile.writeTo(Paths.get(rootDir + "/target/generated-sources/kobuka/" + packageName.replaceAll("\\.", "/") + "/" + className + ".java"));
     }
 
     private static void generateMethod(TypeSpec.Builder interfaceBuilder, TypeSpec.Builder classBuilder, String key, TypeName type, String documentation) {
