@@ -22,7 +22,7 @@ public class CustomBuilderTest {
     @Test
     public void testSimpleProducerConfig() {
 
-        // Developers just use the fluent API with all additional methods available.
+        // Developers just use the fluent API with all additional methods available (withXXX).
 
         ProducerConfig config = new CustomProducerConfigBuilder()
                 .bootstrapServers("localhost:9092")
@@ -78,7 +78,8 @@ public class CustomBuilderTest {
     }
 
     /**
-     * Our custom configuration builder bundling the two traits above. Typically in the application template.
+     * The custom configuration builder includes the two traits above.
+     * Typically provided in the application template where users can adapt it.
      */
     static class CustomProducerConfigBuilder extends BaseProducerConfigBuilder<CustomProducerConfigBuilder> implements
             OptimizationTraits<CustomProducerConfigBuilder>,

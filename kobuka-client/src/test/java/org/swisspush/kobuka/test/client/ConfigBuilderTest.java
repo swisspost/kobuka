@@ -2,10 +2,13 @@ package org.swisspush.kobuka.test.client;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.config.types.Password;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.Test;
 import org.swisspush.kobuka.client.CommonClientConfigBuilder;
 import org.swisspush.kobuka.client.ConsumerConfigBuilder;
+import org.swisspush.kobuka.client.ProducerConfigBuilder;
 
 import java.util.Arrays;
 
@@ -61,15 +64,24 @@ public class ConfigBuilderTest {
                 new CommonClientConfigBuilder()
                         .bootstrapServers("localhost:9092,otherhost:9092");
 
-        ConsumerConfig config =
+        ConsumerConfig consumerConfig =
                 commonConfigBuilder
                         .map(ConsumerConfigBuilder::create)
                         .keyDeserializer(StringDeserializer.class)
                         .valueDeserializer(StringDeserializer.class)
                         .build(ConsumerConfig::new);
 
+        ProducerConfig producerConfig =
+                commonConfigBuilder
+                        .map(ProducerConfigBuilder::create)
+                        .keySerializer(StringDeserializer.class)
+                        .valueSerializer(StringDeserializer.class)
+                        .build(ProducerConfig::new);
+
         assertEquals(Arrays.asList("localhost:9092", "otherhost:9092"),
-                config.getList(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
+                consumerConfig.getList(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
+        assertEquals(Arrays.asList("localhost:9092", "otherhost:9092"),
+                producerConfig.getList(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
     }
 
     /**
@@ -80,6 +92,7 @@ public class ConfigBuilderTest {
         ConsumerConfig conf1 =
                 new ConsumerConfigBuilder()
                         .bootstrapServers("localhost:9092,otherhost:9092")
+                        .sslKeyPassword(new Password("secret"))
                         .keyDeserializer(StringDeserializer.class)
                         .valueDeserializer(StringDeserializer.class)
                         .build(ConsumerConfig::new);
@@ -87,6 +100,7 @@ public class ConfigBuilderTest {
         ConsumerConfig conf2 =
                 new ConsumerConfigBuilder()
                         .bootstrapServers(Arrays.asList("localhost:9092", "otherhost:9092"))
+                        .sslKeyPassword("secret")
                         .keyDeserializer(StringDeserializer.class)
                         .valueDeserializer(StringDeserializer.class)
                         .build(ConsumerConfig::new);
