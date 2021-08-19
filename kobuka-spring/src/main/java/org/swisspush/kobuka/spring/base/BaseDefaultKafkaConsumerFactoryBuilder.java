@@ -1,4 +1,4 @@
-package org.swisspush.kobuka.test.spring.base;
+package org.swisspush.kobuka.spring.base;
 
 import org.apache.kafka.common.serialization.Deserializer;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;

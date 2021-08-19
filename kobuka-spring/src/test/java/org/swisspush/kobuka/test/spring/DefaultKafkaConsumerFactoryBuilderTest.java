@@ -6,8 +6,9 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.Test;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.swisspush.kobuka.client.ConsumerConfigBuilder;
-import org.swisspush.kobuka.test.spring.base.BaseDefaultKafkaConsumerFactoryBuilder;
-import org.swisspush.kobuka.test.spring.base.SpringBuilderFunctions;
+import org.swisspush.kobuka.spring.DefaultKafkaConsumerFactoryBuilder;
+import org.swisspush.kobuka.spring.base.BaseDefaultKafkaConsumerFactoryBuilder;
+import org.swisspush.kobuka.spring.base.SpringBuilderFunctions;
 
 import java.util.Map;
 

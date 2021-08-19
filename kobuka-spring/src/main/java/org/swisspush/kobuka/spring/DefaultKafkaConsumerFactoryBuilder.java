@@ -1,6 +1,6 @@
-package org.swisspush.kobuka.test.spring;
+package org.swisspush.kobuka.spring;
 
-import org.swisspush.kobuka.test.spring.base.BaseDefaultKafkaConsumerFactoryBuilder;
+import org.swisspush.kobuka.spring.base.BaseDefaultKafkaConsumerFactoryBuilder;
 
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package org.swisspush.kobuka.test.spring.base;
+package org.swisspush.kobuka.spring.base;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
