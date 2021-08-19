@@ -1,7 +1,5 @@
 package org.swisspush.kobuka.client.base;
 
-import org.apache.kafka.clients.admin.AdminClientConfig;
-
 import java.util.Map;
 import java.util.function.Function;
 
@@ -9,29 +7,30 @@ import java.util.function.Function;
  * Base class for custom builders. Do not use directly.
  */
 public class BaseAdminClientConfigBuilder<T extends BaseAdminClientConfigBuilder<T>>
-        extends AbstractAdminClientConfigBuilder<T> implements BuilderFunctions<T> {
+        extends AbstractAdminClientConfigBuilder<T> implements ClientBuilderFunctions<T> {
 
-    public static <T extends BaseProducerConfigBuilder<T>> BaseProducerConfigBuilder<T> create() {
-        return new BaseProducerConfigBuilder<>();
+    public static <T extends BaseAdminClientConfigBuilder<T>> BaseAdminClientConfigBuilder<T> create() {
+        return new BaseAdminClientConfigBuilder<>();
     }
 
-    public static <T extends BaseProducerConfigBuilder<T>> BaseProducerConfigBuilder<T> create(BaseAdminClientConfigBuilder<?> parent) {
-        BaseProducerConfigBuilder<T> result = new BaseProducerConfigBuilder<>();
+    public static <T extends BaseAdminClientConfigBuilder<T>> BaseAdminClientConfigBuilder<T> create(BaseAdminClientConfigBuilder<?> parent) {
+        BaseAdminClientConfigBuilder<T> result = new BaseAdminClientConfigBuilder<>();
         result.configs.putAll(parent.configs);
         return result;
     }
 
-    public static <T extends BaseProducerConfigBuilder<T>> BaseProducerConfigBuilder<T> create(BaseCommonClientConfigBuilder<?> parent) {
-        BaseProducerConfigBuilder<T> result = new BaseProducerConfigBuilder<>();
+    public static <T extends BaseAdminClientConfigBuilder<T>> BaseAdminClientConfigBuilder<T> create(BaseCommonClientConfigBuilder<?> parent) {
+        BaseAdminClientConfigBuilder<T> result = new BaseAdminClientConfigBuilder<>();
         result.configs.putAll(parent.configs);
         return result;
     }
 
+    @Override
     public Map<String, Object> get() {
         return configs;
     }
 
-    public <R> R map(Function<BaseAdminClientConfigBuilder<?>, R> fn) {
+    public <R> R transform(Function<BaseAdminClientConfigBuilder<?>, R> fn) {
         return fn.apply(this);
     }
 }

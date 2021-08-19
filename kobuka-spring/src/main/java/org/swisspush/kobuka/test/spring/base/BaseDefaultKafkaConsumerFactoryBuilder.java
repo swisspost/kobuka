@@ -5,42 +5,29 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
-public class BaseDefaultKafkaConsumerFactoryBuilder<T
-        extends BaseDefaultKafkaConsumerFactoryBuilder<T,K,V>, K,V> implements Supplier<DefaultKafkaConsumerFactory<K,V> > {
+public class BaseDefaultKafkaConsumerFactoryBuilder<T extends BaseDefaultKafkaConsumerFactoryBuilder<T,K,V>, K,V>
+        implements SpringBuilderFunctions<T, DefaultKafkaConsumerFactory<K,V> > {
 
     final DefaultKafkaConsumerFactory<K,V> factory;
 
     public BaseDefaultKafkaConsumerFactoryBuilder(Map<String, Object> config) {
-        factory = new DefaultKafkaConsumerFactory<K,V>(config);
+        factory = new DefaultKafkaConsumerFactory<>(config);
     }
 
-    @SuppressWarnings("unchecked")
     public T keyDeserializer(Deserializer<K> deserializer) {
         factory.setKeyDeserializer(deserializer);
-        return (T)this;
+        return self();
     }
 
-    @SuppressWarnings("unchecked")
     public T valueDeserializer(Deserializer<V> deserializer) {
         factory.setValueDeserializer(deserializer);
-        return (T)this;
+        return self();
     }
 
-    @SuppressWarnings("unchecked")
-    public T apply(Consumer<DefaultKafkaConsumerFactory<K,V>> consumer) {
-        consumer.accept(factory);
-        return (T)this;
-    }
-
+    @Override
     public DefaultKafkaConsumerFactory<K,V> get() {
         return factory;
-    }
-
-    public <R> R build(Function<DefaultKafkaConsumerFactory<K,V>, R> fn) {
-        return fn.apply(factory);
     }
 
 }

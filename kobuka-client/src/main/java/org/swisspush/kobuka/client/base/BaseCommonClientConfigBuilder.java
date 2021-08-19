@@ -11,7 +11,7 @@ public class BaseCommonClientConfigBuilder<T extends BaseCommonClientConfigBuild
         return new BaseCommonClientConfigBuilder<>();
     }
 
-    public <R> R map(Function<BaseCommonClientConfigBuilder<?>, R> fn) {
+    public <R> R transform(Function<BaseCommonClientConfigBuilder<?>, R> fn) {
         return fn.apply(this);
     }
 }

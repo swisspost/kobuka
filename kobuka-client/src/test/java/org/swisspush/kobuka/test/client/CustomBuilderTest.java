@@ -29,7 +29,7 @@ public class CustomBuilderTest {
                 .withDefaultSerialization()
                 .batchSize(2)
                 .withBetterThroughput()
-                .build(ProducerConfig::new);
+                .map(ProducerConfig::new);
 
         assertEquals(config.getList(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG), Collections.singletonList("localhost:9092"));
         assertEquals(config.getClass(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG), StringSerializer.class);
@@ -41,38 +41,36 @@ public class CustomBuilderTest {
     /**
      * Configuration traits about optimization.
      */
-    @SuppressWarnings("unchecked")
     interface OptimizationTraits<T extends OptimizationTraits<T>> extends ProducerConfigFields<T> {
 
         default T withBetterThroughput() {
             acks("0");
             maxInFlightRequestsPerConnection(1000);
-            return (T) this;
+            return self();
         }
 
         default T withBetterDurability() {
             acks("all");
             maxInFlightRequestsPerConnection(1);
-            return (T) this;
+            return self();
         }
     }
 
     /**
      * Configuration traits about serialization.
      */
-    @SuppressWarnings("unchecked")
     interface SerializationTraits<T extends SerializationTraits<T>> extends ProducerConfigFields<T> {
 
         default T withDefaultSerialization() {
             keySerializer(StringSerializer.class);
             valueSerializer(StringSerializer.class);
-            return (T) this;
+            return self();
         }
 
         default T withBinarySerialization() {
             keySerializer(StringSerializer.class);
             valueSerializer(BytesSerializer.class);
-            return (T) this;
+            return self();
         }
 
     }

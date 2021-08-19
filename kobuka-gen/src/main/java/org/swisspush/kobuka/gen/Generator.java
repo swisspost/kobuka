@@ -22,7 +22,7 @@ public class Generator {
 
     public final static String CLIENT_PACKAGE = "org.swisspush.kobuka.client.base";
 
-    public static void main(String args[]) throws IOException {
+    public static void main(String[] args) throws IOException {
         String rootDir = args[0];
 
         generateBuilder(CLIENT_PACKAGE,
@@ -96,6 +96,12 @@ public class Generator {
             }
         });
 
+        interfaceBuilder.addMethod(methodBuilder("self")
+                .addModifiers(Modifier.PUBLIC, Modifier.DEFAULT)
+                .returns(TypeVariableName.get("T"))
+                .addStatement("return (T)this")
+                .build());
+
         JavaFile interfaceJavaFile = JavaFile.builder(packageName, interfaceBuilder.build())
                 .build();
         JavaFile classJavaFile = JavaFile.builder(packageName, classBuilder.build())
@@ -124,7 +130,7 @@ public class Generator {
                 .returns(TypeVariableName.get("T"))
                 .addParameter(type, "value")
                 .addStatement("configs.put($S, value)", key.name)
-                .addStatement("return (T)this")
+                .addStatement("return self()")
                 .build());
     }
 

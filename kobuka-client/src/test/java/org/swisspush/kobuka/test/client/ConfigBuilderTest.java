@@ -12,6 +12,7 @@ import org.swisspush.kobuka.client.ProducerConfigBuilder;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -27,7 +28,7 @@ public class ConfigBuilderTest {
                         .keyDeserializer(StringDeserializer.class)
                         .valueDeserializer(StringDeserializer.class)
                         .groupId("hello")
-                        .build(KafkaConsumer::new);
+                        .map(KafkaConsumer::new);
 
         assertEquals("hello", consumer.groupMetadata().groupId());
     }
@@ -46,14 +47,14 @@ public class ConfigBuilderTest {
 
         ConsumerConfig config =
                 original
-                        .map(ConsumerConfigBuilder::create)
+                        .transform(ConsumerConfigBuilder::create)
                         .autoCommitIntervalMs(1234)
-                        .build(ConsumerConfig::new);
+                        .map(ConsumerConfig::new);
 
         assertEquals(Arrays.asList("localhost:9092", "otherhost:9092"),
                 config.getList(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
         assertEquals(1234, config.getInt(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG));
-        assertNotEquals(1234, original.build(ConsumerConfig::new).getInt(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG));
+        assertNotEquals(1234, original.map(ConsumerConfig::new).getInt(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG));
     }
 
     /**
@@ -68,17 +69,17 @@ public class ConfigBuilderTest {
 
         ConsumerConfig consumerConfig =
                 commonConfigBuilder
-                        .map(ConsumerConfigBuilder::create)
+                        .transform(ConsumerConfigBuilder::create)
                         .keyDeserializer(StringDeserializer.class)
                         .valueDeserializer(StringDeserializer.class)
-                        .build(ConsumerConfig::new);
+                        .map(ConsumerConfig::new);
 
         ProducerConfig producerConfig =
                 commonConfigBuilder
-                        .map(ProducerConfigBuilder::create)
+                        .transform(ProducerConfigBuilder::create)
                         .keySerializer(StringDeserializer.class)
                         .valueSerializer(StringDeserializer.class)
-                        .build(ProducerConfig::new);
+                        .map(ProducerConfig::new);
 
         assertEquals(Arrays.asList("localhost:9092", "otherhost:9092"),
                 consumerConfig.getList(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
@@ -98,7 +99,7 @@ public class ConfigBuilderTest {
                         .sslKeyPassword(new Password("secret"))
                         .keyDeserializer(StringDeserializer.class)
                         .valueDeserializer(StringDeserializer.class)
-                        .build(ConsumerConfig::new);
+                        .map(ConsumerConfig::new);
 
         ConsumerConfig conf2 =
                 new ConsumerConfigBuilder()
@@ -106,7 +107,7 @@ public class ConfigBuilderTest {
                         .sslKeyPassword("secret")
                         .keyDeserializer(StringDeserializer.class)
                         .valueDeserializer(StringDeserializer.class)
-                        .build(ConsumerConfig::new);
+                        .map(ConsumerConfig::new);
 
         assertEquals(
                 conf1.getList(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG),
@@ -121,9 +122,31 @@ public class ConfigBuilderTest {
                         .bootstrapServers("localhost:9092,otherhost:9092")
                         .keyDeserializer(StringDeserializer.class)
                         .valueDeserializer(StringDeserializer.class)
-                        .addProperty("custom", "prop")
+                        .property("custom", "prop")
                         .get();
 
         assertEquals("prop", config.get("custom"));
+    }
+
+    @Test
+    public void testSupplier() {
+
+        Map<String, Object> config =
+            safeGet(
+                new ConsumerConfigBuilder()
+                        .bootstrapServers("localhost:9092,otherhost:9092")
+                        .keyDeserializer(StringDeserializer.class)
+                        .valueDeserializer(StringDeserializer.class));
+
+        assertEquals(StringDeserializer.class,
+                config.get(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG));
+    }
+
+    private <T> T safeGet(Supplier<T> supplier) {
+        try {
+            return supplier.get();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
