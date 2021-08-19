@@ -1,7 +1,5 @@
 package org.swisspush.kobuka.test.spring.base;
 
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -14,6 +12,6 @@ public interface SpringBuilderFunctions<T, R> extends Supplier<R> {
 
     @SuppressWarnings("unchecked")
     default T self() {
-        return (T)this;
+        return (T) this;
     }
 }

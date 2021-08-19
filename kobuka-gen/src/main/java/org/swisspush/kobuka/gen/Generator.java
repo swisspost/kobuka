@@ -93,8 +93,8 @@ public class Generator {
                                 classBuilder,
                                 entry.getValue(),
                                 ClassName.get(String.class));
-            }
-        });
+                    }
+                });
 
         interfaceBuilder.addMethod(methodBuilder("self")
                 .addModifiers(Modifier.PUBLIC, Modifier.DEFAULT)
@@ -115,11 +115,11 @@ public class Generator {
         interfaceBuilder.addMethod(methodBuilder(toCamelCase(key.displayName))
                 .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                 .addJavadoc(
-                        "<b>"+key.displayName+"</b><p>\n"+
-                        key.documentation.replaceAll("\\. ", ".<p>") +
-                                "\n<p><b>Default:</b> "+ renderDefault(key) +
-                                "\n<p><b>Valid Values:</b> "+ (key.validator != null ? key.validator.toString() : "")+
-                                "\n<p><b>Importance:</b> "+ key.importance.toString().toLowerCase(Locale.ROOT))
+                        "<b>" + key.displayName + "</b><p>\n" +
+                                key.documentation.replaceAll("\\. ", ".<p>") +
+                                "\n<p><b>Default:</b> " + renderDefault(key) +
+                                "\n<p><b>Valid Values:</b> " + (key.validator != null ? key.validator.toString() : "") +
+                                "\n<p><b>Importance:</b> " + key.importance.toString().toLowerCase(Locale.ROOT))
 
                 .returns(TypeVariableName.get("T"))
                 .addParameter(type, "value")

@@ -132,11 +132,11 @@ public class ConfigBuilderTest {
     public void testSupplier() {
 
         Map<String, Object> config =
-            safeGet(
-                new ConsumerConfigBuilder()
-                        .bootstrapServers("localhost:9092,otherhost:9092")
-                        .keyDeserializer(StringDeserializer.class)
-                        .valueDeserializer(StringDeserializer.class));
+                safeGet(
+                        new ConsumerConfigBuilder()
+                                .bootstrapServers("localhost:9092,otherhost:9092")
+                                .keyDeserializer(StringDeserializer.class)
+                                .valueDeserializer(StringDeserializer.class));
 
         assertEquals(StringDeserializer.class,
                 config.get(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG));

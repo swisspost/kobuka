@@ -10,7 +10,6 @@ import org.swisspush.kobuka.test.spring.base.BaseDefaultKafkaConsumerFactoryBuil
 import org.swisspush.kobuka.test.spring.base.SpringBuilderFunctions;
 
 import java.util.Map;
-import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -54,11 +53,11 @@ public class DefaultKafkaConsumerFactoryBuilderTest {
                         .withDefaultSerialization()
                         .get();
 
-        assert(factory.getKeyDeserializer() instanceof StringDeserializer);
+        assert (factory.getKeyDeserializer() instanceof StringDeserializer);
     }
 
     interface SerializationTraits<T extends SerializationTraits<T, K, V>, K, V>
-            extends SpringBuilderFunctions<T, DefaultKafkaConsumerFactory<K,V>> {
+            extends SpringBuilderFunctions<T, DefaultKafkaConsumerFactory<K, V>> {
 
         @SuppressWarnings("unchecked")
         default T withDefaultSerialization() {

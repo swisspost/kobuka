@@ -4,12 +4,11 @@ import org.apache.kafka.common.serialization.Deserializer;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 
 import java.util.Map;
-import java.util.function.Consumer;
 
-public class BaseDefaultKafkaConsumerFactoryBuilder<T extends BaseDefaultKafkaConsumerFactoryBuilder<T,K,V>, K,V>
-        implements SpringBuilderFunctions<T, DefaultKafkaConsumerFactory<K,V> > {
+public class BaseDefaultKafkaConsumerFactoryBuilder<T extends BaseDefaultKafkaConsumerFactoryBuilder<T, K, V>, K, V>
+        implements SpringBuilderFunctions<T, DefaultKafkaConsumerFactory<K, V>> {
 
-    final DefaultKafkaConsumerFactory<K,V> factory;
+    final DefaultKafkaConsumerFactory<K, V> factory;
 
     public BaseDefaultKafkaConsumerFactoryBuilder(Map<String, Object> config) {
         factory = new DefaultKafkaConsumerFactory<>(config);
@@ -26,7 +25,7 @@ public class BaseDefaultKafkaConsumerFactoryBuilder<T extends BaseDefaultKafkaCo
     }
 
     @Override
-    public DefaultKafkaConsumerFactory<K,V> get() {
+    public DefaultKafkaConsumerFactory<K, V> get() {
         return factory;
     }
 
