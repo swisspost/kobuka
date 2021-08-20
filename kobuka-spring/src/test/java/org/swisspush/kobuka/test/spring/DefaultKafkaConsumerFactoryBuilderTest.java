@@ -6,6 +6,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.Test;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.swisspush.kobuka.client.ConsumerConfigBuilder;
+import org.swisspush.kobuka.spring.ConcurrentKafkaListenerContainerFactoryBuilder;
 import org.swisspush.kobuka.spring.DefaultKafkaConsumerFactoryBuilder;
 import org.swisspush.kobuka.spring.base.BaseDefaultKafkaConsumerFactoryBuilder;
 import org.swisspush.kobuka.spring.base.SpringBuilderFunctions;
@@ -55,6 +56,17 @@ public class DefaultKafkaConsumerFactoryBuilderTest {
                         .get();
 
         assert (factory.getKeyDeserializer() instanceof StringDeserializer);
+    }
+
+    @Test
+    public void testGeneratedBuilder() {
+        new ConsumerConfigBuilder()
+                .bootstrapServers("localhost:9092,otherhost:9092")
+                .map(DefaultKafkaConsumerFactoryBuilder::new)
+                .map(ConcurrentKafkaListenerContainerFactoryBuilder::new)
+                .ackDiscarded(true)
+                .with()
+                .get();
     }
 
     interface SerializationTraits<T extends SerializationTraits<T, K, V>, K, V>

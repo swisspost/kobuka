@@ -4,6 +4,7 @@ import org.apache.kafka.common.serialization.Deserializer;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 
 import java.util.Map;
+import java.util.function.Function;
 
 public class BaseDefaultKafkaConsumerFactoryBuilder<T extends BaseDefaultKafkaConsumerFactoryBuilder<T, K, V>, K, V>
         implements SpringBuilderFunctions<T, DefaultKafkaConsumerFactory<K, V>> {
@@ -22,6 +23,10 @@ public class BaseDefaultKafkaConsumerFactoryBuilder<T extends BaseDefaultKafkaCo
     public T valueDeserializer(Deserializer<V> deserializer) {
         factory.setValueDeserializer(deserializer);
         return self();
+    }
+
+    public <R> R map(Function<DefaultKafkaConsumerFactory<K, V>, R> fn) {
+        return fn.apply(get());
     }
 
     @Override

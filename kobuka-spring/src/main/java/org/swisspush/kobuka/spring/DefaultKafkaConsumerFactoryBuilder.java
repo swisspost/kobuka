@@ -7,7 +7,11 @@ import java.util.Map;
 public class DefaultKafkaConsumerFactoryBuilder<K, V>
         extends BaseDefaultKafkaConsumerFactoryBuilder<DefaultKafkaConsumerFactoryBuilder<K, V>, K, V> {
 
-    public DefaultKafkaConsumerFactoryBuilder(Map<String, Object> config) {
-        super(config);
+    public DefaultKafkaConsumerFactoryBuilder(Map<String, Object> configs) {
+        super(configs);
+    }
+
+    public static <K,V> DefaultKafkaConsumerFactoryBuilder<K, V> create(Map<String, Object> configs) {
+        return new DefaultKafkaConsumerFactoryBuilder<K, V>(configs);
     }
 }
