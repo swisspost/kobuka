@@ -4,15 +4,20 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-interface ClientBuilderFunctions<T> extends Supplier<Map<String, Object>> {
-    default <R> R map(Function<Map<String, Object>, R> fn) {
-        return fn.apply(get());
+interface ClientBuilderFunctions<T> {
+    default <R> R build(Function<Map<String, Object>, R> fn) {
+        return fn.apply(build());
     }
 
     @SuppressWarnings("unchecked")
     default T property(String key, Object value) {
-        get().put(key, value);
+        build().put(key, value);
         return (T) this;
     }
 
+    default Supplier<Map<String, Object>> asSupplier() {
+        return this::build;
+    }
+
+    Map<String, Object> build();
 }

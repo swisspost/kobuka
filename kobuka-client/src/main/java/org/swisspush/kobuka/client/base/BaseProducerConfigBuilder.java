@@ -25,7 +25,7 @@ public class BaseProducerConfigBuilder<T extends BaseProducerConfigBuilder<T> & 
     }
 
     @Override
-    public Map<String, Object> get() {
+    public Map<String, Object> build() {
         return configs;
     }
 

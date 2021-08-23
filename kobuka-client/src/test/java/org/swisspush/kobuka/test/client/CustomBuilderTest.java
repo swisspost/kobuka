@@ -29,7 +29,7 @@ public class CustomBuilderTest {
                 .withDefaultSerialization()
                 .batchSize(2)
                 .withBetterThroughput()
-                .map(ProducerConfig::new);
+                .build(ProducerConfig::new);
 
         assertEquals(config.getList(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG), Collections.singletonList("localhost:9092"));
         assertEquals(config.getClass(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG), StringSerializer.class);

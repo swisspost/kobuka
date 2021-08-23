@@ -8,12 +8,11 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.swisspush.kobuka.client.ConsumerConfigBuilder;
 import org.swisspush.kobuka.spring.ConcurrentKafkaListenerContainerFactoryBuilder;
 import org.swisspush.kobuka.spring.DefaultKafkaConsumerFactoryBuilder;
-import org.swisspush.kobuka.spring.base.BaseDefaultKafkaConsumerFactoryBuilder;
-import org.swisspush.kobuka.spring.base.SpringBuilderFunctions;
 
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.kafka.listener.ContainerProperties.AckMode.BATCH;
 
 public class DefaultKafkaConsumerFactoryBuilderTest {
 
@@ -23,69 +22,46 @@ public class DefaultKafkaConsumerFactoryBuilderTest {
         DefaultKafkaConsumerFactory<String, String> factory =
                 new ConsumerConfigBuilder()
                         .bootstrapServers("localhost:9092,otherhost:9092")
-                        .map(DefaultKafkaConsumerFactoryBuilder<String, String>::new)
+                        .build(DefaultKafkaConsumerFactoryBuilder<String, String>::new)
                         .keyDeserializer(new StringDeserializer())
-                        .get();
+                        .build();
 
         assertEquals("localhost:9092,otherhost:9092",
                 factory.getConfigurationProperties().get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
-    }
-
-
-    @Test
-    public void testApply() {
-
-        Deserializer<String> des = new StringDeserializer();
-        DefaultKafkaConsumerFactory<String, String> result =
-                new ConsumerConfigBuilder()
-                        .bootstrapServers("localhost:9092,otherhost:9092")
-                        .map(DefaultKafkaConsumerFactoryBuilder<String, String>::new)
-                        .apply(factory -> factory.setKeyDeserializer(des))
-                        .get();
-
-        assertEquals(des, result.getKeyDeserializer());
-    }
-
-    @Test
-    public void testCustomBuilder() {
-        DefaultKafkaConsumerFactory<String, String> factory =
-                new ConsumerConfigBuilder()
-                        .bootstrapServers("localhost:9092,otherhost:9092")
-                        .map(CustomDefaultKafkaConsumerFactoryBuilder<String, String>::new)
-                        .withDefaultSerialization()
-                        .get();
-
-        assert (factory.getKeyDeserializer() instanceof StringDeserializer);
     }
 
     @Test
     public void testGeneratedBuilder() {
         new ConsumerConfigBuilder()
                 .bootstrapServers("localhost:9092,otherhost:9092")
-                .map(DefaultKafkaConsumerFactoryBuilder::new)
-                .map(ConcurrentKafkaListenerContainerFactoryBuilder::new)
+                .build(DefaultKafkaConsumerFactoryBuilder::new)
+                .build(ConcurrentKafkaListenerContainerFactoryBuilder::new)
                 .ackDiscarded(true)
-                .with()
-                .get();
+                .withContainerProperties(p -> p
+                        .ackCount(2)
+                        .ackMode(BATCH))
+                .build();
     }
 
-    interface SerializationTraits<T extends SerializationTraits<T, K, V>, K, V>
-            extends SpringBuilderFunctions<T, DefaultKafkaConsumerFactory<K, V>> {
+    @Test
+    public void testDefaultSerialization() {
+        new ConsumerConfigBuilder()
+                .bootstrapServers("localhost:9092,otherhost:9092")
+                .build(CustomDefaultKafkaConsumerFactoryBuilder::new)
+                .withDefaultSerialization()
+                .build();
+    }
+
+    static class CustomDefaultKafkaConsumerFactoryBuilder<K, V> extends DefaultKafkaConsumerFactoryBuilder<K, V> {
+        public CustomDefaultKafkaConsumerFactoryBuilder(Map<String, Object> configs) {
+            super(configs);
+        }
 
         @SuppressWarnings("unchecked")
-        default T withDefaultSerialization() {
-            get().setKeyDeserializer((Deserializer<K>) new StringDeserializer());
-            get().setValueDeserializer((Deserializer<V>) new StringDeserializer());
-            return self();
-        }
-    }
-
-    static class CustomDefaultKafkaConsumerFactoryBuilder<K, V>
-            extends BaseDefaultKafkaConsumerFactoryBuilder<CustomDefaultKafkaConsumerFactoryBuilder<K, V>, K, V>
-            implements SerializationTraits<CustomDefaultKafkaConsumerFactoryBuilder<K, V>, K, V> {
-
-        public CustomDefaultKafkaConsumerFactoryBuilder(Map<String, Object> config) {
-            super(config);
+        public CustomDefaultKafkaConsumerFactoryBuilder<K, V> withDefaultSerialization() {
+            return (CustomDefaultKafkaConsumerFactoryBuilder<K, V>) this
+                    .keyDeserializer((Deserializer<K>) new StringDeserializer())
+                    .valueDeserializer((Deserializer<V>) new StringDeserializer());
         }
     }
 }

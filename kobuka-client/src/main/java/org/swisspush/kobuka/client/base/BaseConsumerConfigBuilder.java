@@ -26,7 +26,7 @@ public class BaseConsumerConfigBuilder<T extends BaseConsumerConfigBuilder<T> & 
     }
 
     @Override
-    public Map<String, Object> get() {
+    public Map<String, Object> build() {
         return configs;
     }
 
