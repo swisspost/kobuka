@@ -9,7 +9,4 @@ public class DefaultKafkaConsumerFactoryBuilder<K, V>
         configs(configs);
     }
 
-    public static <K, V> DefaultKafkaConsumerFactoryBuilder<K, V> create(Map<String, Object> configs) {
-        return new DefaultKafkaConsumerFactoryBuilder<K, V>(configs);
-    }
 }

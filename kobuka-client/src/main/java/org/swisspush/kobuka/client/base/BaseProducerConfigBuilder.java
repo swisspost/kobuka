@@ -8,20 +8,13 @@ import java.util.function.Function;
  */
 public class BaseProducerConfigBuilder<T extends BaseProducerConfigBuilder<T> & ClientBuilderFunctions<T>>
         extends AbstractProducerConfigBuilder<T> implements ClientBuilderFunctions<T> {
-    public static <T extends BaseProducerConfigBuilder<T>> BaseProducerConfigBuilder<T> create() {
-        return new BaseProducerConfigBuilder<T>();
+
+    public void copyFrom(BaseProducerConfigBuilder<?> parent) {
+        configs.putAll(parent.configs);
     }
 
-    public static <T extends BaseProducerConfigBuilder<T>> BaseProducerConfigBuilder<T> create(BaseProducerConfigBuilder<?> parent) {
-        BaseProducerConfigBuilder<T> result = new BaseProducerConfigBuilder<>();
-        result.configs.putAll(parent.configs);
-        return result;
-    }
-
-    public static <T extends BaseProducerConfigBuilder<T>> BaseProducerConfigBuilder<T> create(BaseCommonClientConfigBuilder<?> parent) {
-        BaseProducerConfigBuilder<T> result = new BaseProducerConfigBuilder<>();
-        result.configs.putAll(parent.configs);
-        return result;
+    public void copyFrom(BaseCommonClientConfigBuilder<?> parent) {
+        configs.putAll(parent.configs);
     }
 
     @Override

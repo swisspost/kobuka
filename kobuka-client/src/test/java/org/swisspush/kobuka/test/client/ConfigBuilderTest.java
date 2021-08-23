@@ -47,7 +47,7 @@ public class ConfigBuilderTest {
 
         ConsumerConfig config =
                 original
-                        .transform(ConsumerConfigBuilder::create)
+                        .transform(ConsumerConfigBuilder::new)
                         .autoCommitIntervalMs(1234)
                         .build(ConsumerConfig::new);
 
@@ -69,14 +69,14 @@ public class ConfigBuilderTest {
 
         ConsumerConfig consumerConfig =
                 commonConfigBuilder
-                        .transform(ConsumerConfigBuilder::create)
+                        .transform(ConsumerConfigBuilder::new)
                         .keyDeserializer(StringDeserializer.class)
                         .valueDeserializer(StringDeserializer.class)
                         .build(ConsumerConfig::new);
 
         ProducerConfig producerConfig =
                 commonConfigBuilder
-                        .transform(ProducerConfigBuilder::create)
+                        .transform(ProducerConfigBuilder::new)
                         .keySerializer(StringDeserializer.class)
                         .valueSerializer(StringDeserializer.class)
                         .build(ProducerConfig::new);
@@ -149,4 +149,12 @@ public class ConfigBuilderTest {
             throw new RuntimeException(e);
         }
     }
+
+    @Test
+    public void testCast() {
+        ConsumerConfigBuilder b = new CommonClientConfigBuilder()
+                .bootstrapServers("localhost:9092")
+                .transform(ConsumerConfigBuilder::new);
+    }
+
 }

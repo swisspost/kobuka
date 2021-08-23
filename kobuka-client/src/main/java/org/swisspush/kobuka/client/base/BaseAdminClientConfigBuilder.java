@@ -9,20 +9,12 @@ import java.util.function.Function;
 public class BaseAdminClientConfigBuilder<T extends BaseAdminClientConfigBuilder<T>>
         extends AbstractAdminClientConfigBuilder<T> implements ClientBuilderFunctions<T> {
 
-    public static <T extends BaseAdminClientConfigBuilder<T>> BaseAdminClientConfigBuilder<T> create() {
-        return new BaseAdminClientConfigBuilder<>();
+    public void copyFrom(BaseAdminClientConfigBuilder<?> parent) {
+        configs.putAll(parent.configs);
     }
 
-    public static <T extends BaseAdminClientConfigBuilder<T>> BaseAdminClientConfigBuilder<T> create(BaseAdminClientConfigBuilder<?> parent) {
-        BaseAdminClientConfigBuilder<T> result = new BaseAdminClientConfigBuilder<>();
-        result.configs.putAll(parent.configs);
-        return result;
-    }
-
-    public static <T extends BaseAdminClientConfigBuilder<T>> BaseAdminClientConfigBuilder<T> create(BaseCommonClientConfigBuilder<?> parent) {
-        BaseAdminClientConfigBuilder<T> result = new BaseAdminClientConfigBuilder<>();
-        result.configs.putAll(parent.configs);
-        return result;
+    public void copyFrom(BaseCommonClientConfigBuilder<?> parent) {
+        configs.putAll(parent.configs);
     }
 
     @Override
