@@ -7,7 +7,7 @@
     <groupId>org.swisspush</groupId>
     <artifactId>kobuka</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.2</version>
+    <version>1.0.2-SNAPSHOT</version>
 
     <build>
         <pluginManagement>
