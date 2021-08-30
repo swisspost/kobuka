@@ -8,7 +8,34 @@
     <artifactId>kobuka</artifactId>
     <packaging>pom</packaging>
     <version>1.0.2-SNAPSHOT</version>
-
+    <url>https://github.com/swisspush/kobuka</url>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <scm>
+        <url>https://github.com/swisspush/kobuka.git</url>
+    </scm>
+    <developers>
+        <developer>
+            <id>floriankammermann</id>
+            <name>Florian Kammermann</name>
+            <email>florian@kammermann.me</email>
+        </developer>
+        <developer>
+            <id>mcweba</id>
+            <name>Marc-Andre Weber</name>
+            <url>https://github.com/mcweba</url>
+        </developer>
+        <developer>
+            <id>ljucam</id>
+            <name>Mario Aerni</name>
+            <url>https://github.com/ljucam</url>
+        </developer>
+    </developers>
     <build>
         <pluginManagement>
             <plugins>
