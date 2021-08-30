@@ -23,19 +23,9 @@
     </scm>
     <developers>
         <developer>
-            <id>floriankammermann</id>
-            <name>Florian Kammermann</name>
-            <email>florian@kammermann.me</email>
-        </developer>
-        <developer>
-            <id>mcweba</id>
-            <name>Marc-Andre Weber</name>
-            <url>https://github.com/mcweba</url>
-        </developer>
-        <developer>
-            <id>ljucam</id>
-            <name>Mario Aerni</name>
-            <url>https://github.com/ljucam</url>
+            <id>laurentbovet</id>
+            <name>Laurent Bovet</name>
+            <email>laurent.bovet@windmaster.ch</email>
         </developer>
     </developers>
     <build>
