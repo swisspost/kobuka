@@ -5,7 +5,7 @@
     <groupId>org.swisspush</groupId>
     <artifactId>kobuka</artifactId>
     <packaging>pom</packaging>
-    <version>1.1.1</version>
+    <version>1.1.2-SNAPSHOT</version>
     <name>kobuka</name>
     <description>Config Builders for Kafka. A fluent API for configuring kafka clients.</description>
     <url>https://github.com/swisspush/kobuka</url>
