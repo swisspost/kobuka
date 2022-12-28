@@ -5,10 +5,12 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.types.Password;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.streams.StreamsConfig;
 import org.junit.jupiter.api.Test;
 import org.swisspush.kobuka.client.CommonClientConfigBuilder;
 import org.swisspush.kobuka.client.ConsumerConfigBuilder;
 import org.swisspush.kobuka.client.ProducerConfigBuilder;
+import org.swisspush.kobuka.client.StreamsConfigBuilder;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -81,10 +83,18 @@ public class ConfigBuilderTest {
                         .valueSerializer(StringDeserializer.class)
                         .build(ProducerConfig::new);
 
+        StreamsConfig streamsConfig =
+                commonConfigBuilder
+                        .transform(StreamsConfigBuilder::new)
+                        .applicationId("hello")
+                        .build(StreamsConfig::new);
+
         assertEquals(Arrays.asList("localhost:9092", "otherhost:9092"),
                 consumerConfig.getList(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
         assertEquals(Arrays.asList("localhost:9092", "otherhost:9092"),
                 producerConfig.getList(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
+        assertEquals(Arrays.asList("localhost:9092", "otherhost:9092"),
+                streamsConfig.getList(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
     }
 
     /**
