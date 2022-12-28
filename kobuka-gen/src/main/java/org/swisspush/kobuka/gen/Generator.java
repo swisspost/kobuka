@@ -6,6 +6,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.common.config.types.Password;
+import org.apache.kafka.streams.StreamsConfig;
 
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
@@ -37,12 +38,17 @@ public class Generator {
                 "AdminClientConfig",
                 stream(AdminClientConfig.configDef()),
                 rootDir);
+        generateBuilder(CLIENT_PACKAGE,
+                "StreamsConfig",
+                stream(StreamsConfig.configDef()),
+                rootDir);
 
         // Generate common keys
 
         Set<String> commonKeys = new HashSet<>(ConsumerConfig.configDef().configKeys().keySet());
         commonKeys.retainAll(ProducerConfig.configDef().configKeys().keySet());
         commonKeys.retainAll(AdminClientConfig.configDef().configKeys().keySet());
+        commonKeys.retainAll(StreamsConfig.configDef().configKeys().keySet());
 
         Stream<Map.Entry<String, ConfigDef.ConfigKey>> commonConfigMap = AdminClientConfig.configDef().configKeys().entrySet().stream()
                 .filter(entry -> commonKeys.contains(entry.getKey()));
