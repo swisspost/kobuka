@@ -23,7 +23,7 @@
         <dependency>
             <groupId>net.karneim</groupId>
             <artifactId>pojobuilder</artifactId>
-            <version>4.2.3</version>
+            <version>${pojobuilder.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
