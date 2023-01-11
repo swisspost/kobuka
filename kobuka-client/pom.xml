@@ -3,7 +3,7 @@
     <parent>
         <artifactId>kobuka</artifactId>
         <groupId>org.swisspush</groupId>
-        <version>1.3.0-SNAPSHOT</version>
+        <version>1.4.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -32,7 +32,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>${exec-maven-plugin.version}</version>
                 <configuration>
                     <mainClass>org.swisspush.kobuka.gen.Generator</mainClass>
                     <includePluginDependencies>true</includePluginDependencies>
@@ -59,7 +59,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>${build-helper-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>
@@ -76,5 +76,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
