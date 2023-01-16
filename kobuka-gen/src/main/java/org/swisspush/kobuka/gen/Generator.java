@@ -150,26 +150,17 @@ public class Generator {
     }
 
     private static TypeName resolveType(ConfigDef.Type type) {
-        switch (type) {
-            case INT:
-                return ClassName.get(Integer.class);
-            case BOOLEAN:
-                return ClassName.get(Boolean.class);
-            case CLASS:
-                return ClassName.get(Class.class);
-            case DOUBLE:
-                return ClassName.get(Double.class);
-            case LONG:
-                return ClassName.get(Long.class);
-            case SHORT:
-                return ClassName.get(Short.class);
-            case LIST:
-                return ParameterizedTypeName.get(List.class, String.class);
-            case PASSWORD:
-                return ClassName.get(Password.class);
-            default:
-                return ClassName.get(String.class);
-        }
+        return switch (type) {
+            case INT -> ClassName.get(Integer.class);
+            case BOOLEAN -> ClassName.get(Boolean.class);
+            case CLASS -> ClassName.get(Class.class);
+            case DOUBLE -> ClassName.get(Double.class);
+            case LONG -> ClassName.get(Long.class);
+            case SHORT -> ClassName.get(Short.class);
+            case LIST -> ParameterizedTypeName.get(List.class, String.class);
+            case PASSWORD -> ClassName.get(Password.class);
+            default -> ClassName.get(String.class);
+        };
     }
 
     private static String renderDefault(ConfigDef.ConfigKey key) {
@@ -203,18 +194,13 @@ public class Generator {
                 break;
             }
         }
-        switch (i) {
-            case 1:
-                return " (" + value + " kibibyte" + (value == 1 ? ")" : "s)");
-            case 2:
-                return " (" + value + " mebibyte" + (value == 1 ? ")" : "s)");
-            case 3:
-                return " (" + value + " gibibyte" + (value == 1 ? ")" : "s)");
-            case 4:
-                return " (" + value + " tebibyte" + (value == 1 ? ")" : "s)");
-            default:
-                return "";
-        }
+        return switch (i) {
+            case 1 -> " (" + value + " kibibyte" + (value == 1 ? ")" : "s)");
+            case 2 -> " (" + value + " mebibyte" + (value == 1 ? ")" : "s)");
+            case 3 -> " (" + value + " gibibyte" + (value == 1 ? ")" : "s)");
+            case 4 -> " (" + value + " tebibyte" + (value == 1 ? ")" : "s)");
+            default -> "";
+        };
     }
 
     private static String niceTimeUnits(long millis) {
