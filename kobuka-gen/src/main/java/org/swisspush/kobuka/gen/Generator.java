@@ -120,12 +120,21 @@ public class Generator {
     private static void generateMethod(TypeSpec.Builder interfaceBuilder, TypeSpec.Builder classBuilder, ConfigDef.ConfigKey key, TypeName type) {
         interfaceBuilder.addMethod(methodBuilder(toCamelCase(key.displayName))
                 .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+
+                /*
+                    The JavaDoc in kafka-clients contains html errors (e.g. 'self-closing element not allowed')
+                    which cause a failure in the build of maven-javadoc-plugin.
+                    Since the source code of kafka-clients is not under our control, 'failOnError' configuration is set
+                    to 'false'
+
+                    See: https://maven.apache.org/plugins/maven-javadoc-plugin/javadoc-mojo.html#failOnError
+                 */
                 .addJavadoc(
-                        "<b>" + key.displayName + "</b><p>\n" +
-                                key.documentation.replaceAll("\\. ", ".<p>") +
-                                "\n<p><b>Default:</b> " + renderDefault(key) +
-                                "\n<p><b>Valid Values:</b> " + (key.validator != null ? key.validator.toString() : "") +
-                                "\n<p><b>Importance:</b> " + key.importance.toString().toLowerCase(Locale.ROOT))
+                        "<p><b>" + key.displayName + "</b></p>\n" +
+                                key.documentation.replaceAll("\\. ", ".<br>") +
+                                "\n<p><b>Default:</b> " + renderDefault(key) + "</p>" +
+                                "\n<p><b>Valid Values:</b> " + (key.validator != null ? key.validator.toString() : "") + "</p>" +
+                                "\n<p><b>Importance:</b> " + key.importance.toString().toLowerCase(Locale.ROOT) + "</p>")
 
                 .returns(TypeVariableName.get("T"))
                 .addParameter(type, "value")
