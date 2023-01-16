@@ -10,6 +10,7 @@ import org.apache.kafka.streams.StreamsConfig;
 
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -24,27 +25,26 @@ public class Generator {
     public final static String CLIENT_PACKAGE = "org.swisspush.kobuka.client.base";
 
     public static void main(String[] args) throws IOException {
-        String rootDir = args[0];
+        Path path = Paths.get(args[0] + "/target/generated-sources/kobuka/");
 
         generateBuilder(CLIENT_PACKAGE,
                 "ConsumerConfig",
                 stream(ConsumerConfig.configDef()),
-                rootDir);
+                path);
         generateBuilder(CLIENT_PACKAGE,
                 "ProducerConfig",
                 stream(ProducerConfig.configDef()),
-                rootDir);
+                path);
         generateBuilder(CLIENT_PACKAGE,
                 "AdminClientConfig",
                 stream(AdminClientConfig.configDef()),
-                rootDir);
+                path);
         generateBuilder(CLIENT_PACKAGE,
                 "StreamsConfig",
                 stream(StreamsConfig.configDef()),
-                rootDir);
+                path);
 
         // Generate common keys
-
         Set<String> commonKeys = new HashSet<>(ConsumerConfig.configDef().configKeys().keySet());
         commonKeys.retainAll(ProducerConfig.configDef().configKeys().keySet());
         commonKeys.retainAll(AdminClientConfig.configDef().configKeys().keySet());
@@ -53,14 +53,14 @@ public class Generator {
         Stream<Map.Entry<String, ConfigDef.ConfigKey>> commonConfigMap = AdminClientConfig.configDef().configKeys().entrySet().stream()
                 .filter(entry -> commonKeys.contains(entry.getKey()));
 
-        generateBuilder(CLIENT_PACKAGE, "CommonClientConfig", commonConfigMap, rootDir);
+        generateBuilder(CLIENT_PACKAGE, "CommonClientConfig", commonConfigMap, path);
     }
 
     private static Stream<Map.Entry<String, ConfigDef.ConfigKey>> stream(ConfigDef configDef) {
         return configDef.configKeys().entrySet().stream();
     }
 
-    private static void generateBuilder(String packageName, String baseName, Stream<Map.Entry<String, ConfigDef.ConfigKey>> definitions, String rootDir)
+    private static void generateBuilder(String packageName, String baseName, Stream<Map.Entry<String, ConfigDef.ConfigKey>> definitions, Path path)
             throws IOException {
 
         String interfaceName = baseName + "Fields";
@@ -113,8 +113,8 @@ public class Generator {
         JavaFile classJavaFile = JavaFile.builder(packageName, classBuilder.build())
                 .build();
 
-        interfaceJavaFile.writeTo(Paths.get(rootDir + "/target/generated-sources/kobuka/" + packageName.replaceAll("\\.", "/") + "/" + interfaceName + ".java"));
-        classJavaFile.writeTo(Paths.get(rootDir + "/target/generated-sources/kobuka/" + packageName.replaceAll("\\.", "/") + "/" + className + ".java"));
+        interfaceJavaFile.writeTo(path);
+        classJavaFile.writeTo(path);
     }
 
     private static void generateMethod(TypeSpec.Builder interfaceBuilder, TypeSpec.Builder classBuilder, ConfigDef.ConfigKey key, TypeName type) {
