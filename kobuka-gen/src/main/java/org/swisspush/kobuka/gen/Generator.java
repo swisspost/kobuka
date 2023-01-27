@@ -10,6 +10,7 @@ import org.apache.kafka.streams.StreamsConfig;
 
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -24,27 +25,26 @@ public class Generator {
     public final static String CLIENT_PACKAGE = "org.swisspush.kobuka.client.base";
 
     public static void main(String[] args) throws IOException {
-        String rootDir = args[0];
+        Path path = Paths.get(args[0] + "/target/generated-sources/kobuka/");
 
         generateBuilder(CLIENT_PACKAGE,
                 "ConsumerConfig",
                 stream(ConsumerConfig.configDef()),
-                rootDir);
+                path);
         generateBuilder(CLIENT_PACKAGE,
                 "ProducerConfig",
                 stream(ProducerConfig.configDef()),
-                rootDir);
+                path);
         generateBuilder(CLIENT_PACKAGE,
                 "AdminClientConfig",
                 stream(AdminClientConfig.configDef()),
-                rootDir);
+                path);
         generateBuilder(CLIENT_PACKAGE,
                 "StreamsConfig",
                 stream(StreamsConfig.configDef()),
-                rootDir);
+                path);
 
         // Generate common keys
-
         Set<String> commonKeys = new HashSet<>(ConsumerConfig.configDef().configKeys().keySet());
         commonKeys.retainAll(ProducerConfig.configDef().configKeys().keySet());
         commonKeys.retainAll(AdminClientConfig.configDef().configKeys().keySet());
@@ -53,14 +53,14 @@ public class Generator {
         Stream<Map.Entry<String, ConfigDef.ConfigKey>> commonConfigMap = AdminClientConfig.configDef().configKeys().entrySet().stream()
                 .filter(entry -> commonKeys.contains(entry.getKey()));
 
-        generateBuilder(CLIENT_PACKAGE, "CommonClientConfig", commonConfigMap, rootDir);
+        generateBuilder(CLIENT_PACKAGE, "CommonClientConfig", commonConfigMap, path);
     }
 
     private static Stream<Map.Entry<String, ConfigDef.ConfigKey>> stream(ConfigDef configDef) {
         return configDef.configKeys().entrySet().stream();
     }
 
-    private static void generateBuilder(String packageName, String baseName, Stream<Map.Entry<String, ConfigDef.ConfigKey>> definitions, String rootDir)
+    private static void generateBuilder(String packageName, String baseName, Stream<Map.Entry<String, ConfigDef.ConfigKey>> definitions, Path path)
             throws IOException {
 
         String interfaceName = baseName + "Fields";
@@ -113,19 +113,28 @@ public class Generator {
         JavaFile classJavaFile = JavaFile.builder(packageName, classBuilder.build())
                 .build();
 
-        interfaceJavaFile.writeTo(Paths.get(rootDir + "/target/generated-sources/kobuka/" + packageName.replaceAll("\\.", "/") + "/" + interfaceName + ".java"));
-        classJavaFile.writeTo(Paths.get(rootDir + "/target/generated-sources/kobuka/" + packageName.replaceAll("\\.", "/") + "/" + className + ".java"));
+        interfaceJavaFile.writeTo(path);
+        classJavaFile.writeTo(path);
     }
 
     private static void generateMethod(TypeSpec.Builder interfaceBuilder, TypeSpec.Builder classBuilder, ConfigDef.ConfigKey key, TypeName type) {
         interfaceBuilder.addMethod(methodBuilder(toCamelCase(key.displayName))
                 .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+
+                /*
+                    The JavaDoc in kafka-clients contains html errors (e.g. 'self-closing element not allowed')
+                    which cause a failure in the build of maven-javadoc-plugin.
+                    Since the source code of kafka-clients is not under our control, 'failOnError' configuration is set
+                    to 'false'
+
+                    See: https://maven.apache.org/plugins/maven-javadoc-plugin/javadoc-mojo.html#failOnError
+                 */
                 .addJavadoc(
-                        "<b>" + key.displayName + "</b><p>\n" +
-                                key.documentation.replaceAll("\\. ", ".<p>") +
-                                "\n<p><b>Default:</b> " + renderDefault(key) +
-                                "\n<p><b>Valid Values:</b> " + (key.validator != null ? key.validator.toString() : "") +
-                                "\n<p><b>Importance:</b> " + key.importance.toString().toLowerCase(Locale.ROOT))
+                        "<p><b>" + key.displayName + "</b></p>\n" +
+                                key.documentation.replaceAll("\\. ", ".<br>") +
+                                "\n<p><b>Default:</b> " + renderDefault(key) + "</p>" +
+                                "\n<p><b>Valid Values:</b> " + (key.validator != null ? key.validator.toString() : "") + "</p>" +
+                                "\n<p><b>Importance:</b> " + key.importance.toString().toLowerCase(Locale.ROOT) + "</p>")
 
                 .returns(TypeVariableName.get("T"))
                 .addParameter(type, "value")
@@ -141,26 +150,17 @@ public class Generator {
     }
 
     private static TypeName resolveType(ConfigDef.Type type) {
-        switch (type) {
-            case INT:
-                return ClassName.get(Integer.class);
-            case BOOLEAN:
-                return ClassName.get(Boolean.class);
-            case CLASS:
-                return ClassName.get(Class.class);
-            case DOUBLE:
-                return ClassName.get(Double.class);
-            case LONG:
-                return ClassName.get(Long.class);
-            case SHORT:
-                return ClassName.get(Short.class);
-            case LIST:
-                return ParameterizedTypeName.get(List.class, String.class);
-            case PASSWORD:
-                return ClassName.get(Password.class);
-            default:
-                return ClassName.get(String.class);
-        }
+        return switch (type) {
+            case INT -> ClassName.get(Integer.class);
+            case BOOLEAN -> ClassName.get(Boolean.class);
+            case CLASS -> ClassName.get(Class.class);
+            case DOUBLE -> ClassName.get(Double.class);
+            case LONG -> ClassName.get(Long.class);
+            case SHORT -> ClassName.get(Short.class);
+            case LIST -> ParameterizedTypeName.get(List.class, String.class);
+            case PASSWORD -> ClassName.get(Password.class);
+            default -> ClassName.get(String.class);
+        };
     }
 
     private static String renderDefault(ConfigDef.ConfigKey key) {
@@ -194,18 +194,13 @@ public class Generator {
                 break;
             }
         }
-        switch (i) {
-            case 1:
-                return " (" + value + " kibibyte" + (value == 1 ? ")" : "s)");
-            case 2:
-                return " (" + value + " mebibyte" + (value == 1 ? ")" : "s)");
-            case 3:
-                return " (" + value + " gibibyte" + (value == 1 ? ")" : "s)");
-            case 4:
-                return " (" + value + " tebibyte" + (value == 1 ? ")" : "s)");
-            default:
-                return "";
-        }
+        return switch (i) {
+            case 1 -> " (" + value + " kibibyte" + (value == 1 ? ")" : "s)");
+            case 2 -> " (" + value + " mebibyte" + (value == 1 ? ")" : "s)");
+            case 3 -> " (" + value + " gibibyte" + (value == 1 ? ")" : "s)");
+            case 4 -> " (" + value + " tebibyte" + (value == 1 ? ")" : "s)");
+            default -> "";
+        };
     }
 
     private static String niceTimeUnits(long millis) {
