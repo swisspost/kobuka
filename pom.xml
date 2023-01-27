@@ -233,6 +233,7 @@
                             </execution>
                         </executions>
                         <configuration>
+                            <failOnError>false</failOnError>
                             <source>${java.version}</source>
                         </configuration>
                     </plugin>
