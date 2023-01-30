@@ -233,7 +233,7 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <failOnError>false</failOnError>
+                            <doclint>none</doclint>
                             <source>${java.version}</source>
                         </configuration>
                     </plugin>
