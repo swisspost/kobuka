@@ -5,6 +5,8 @@ import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.ConfigDef;
+import org.apache.kafka.common.config.SaslConfigs;
+import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.config.types.Password;
 import org.apache.kafka.streams.StreamsConfig;
 
@@ -49,6 +51,11 @@ public class Generator {
         commonKeys.retainAll(ProducerConfig.configDef().configKeys().keySet());
         commonKeys.retainAll(AdminClientConfig.configDef().configKeys().keySet());
         commonKeys.retainAll(StreamsConfig.configDef().configKeys().keySet());
+
+        ConfigDef commonConfigs = new ConfigDef();
+        SaslConfigs.addClientSaslSupport(commonConfigs);
+        SslConfigs.addClientSslSupport(commonConfigs);
+        commonKeys.addAll(commonConfigs.configKeys().keySet());
 
         Stream<Map.Entry<String, ConfigDef.ConfigKey>> commonConfigMap = AdminClientConfig.configDef().configKeys().entrySet().stream()
                 .filter(entry -> commonKeys.contains(entry.getKey()));
