@@ -71,6 +71,7 @@
                 <configuration>
                     <doclint>none</doclint>
                     <source>${java.version}</source>
+                    <additionalOptions>-Xdoclint:none</additionalOptions>
                 </configuration>
             </plugin>
             <plugin>
