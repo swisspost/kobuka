@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: 'temurin'
+          distribution: 'focal'
           server-id: sonatype-nexus-staging # Value of the distributionManagement/repository/id field of the pom.xml
           server-username: CI_DEPLOY_USERNAME # env variable for username in deploy
           server-password: CI_DEPLOY_PASSWORD # env variable for token in deploy
