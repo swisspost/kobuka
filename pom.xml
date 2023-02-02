@@ -5,7 +5,7 @@
     <groupId>org.swisspush</groupId>
     <artifactId>kobuka</artifactId>
     <packaging>pom</packaging>
-    <version>1.4.1-SNAPSHOT</version>
+    <version>1.4.3-SNAPSHOT</version>
     <name>kobuka</name>
     <description>Config Builders for Kafka. A fluent API for configuring kafka clients.</description>
     <url>https://github.com/swisspush/kobuka</url>
@@ -77,8 +77,8 @@
                 <version>${jgitflow-maven-plugin.version}</version>
                 <configuration>
                     <flowInitContext>
-                        <masterBranchName>master</masterBranchName>
-                        <developBranchName>develop</developBranchName>
+                        <masterBranchName>fork_master</masterBranchName>
+                        <developBranchName>fork_develop</developBranchName>
                         <featureBranchPrefix>feature-</featureBranchPrefix>
                         <releaseBranchPrefix>release-</releaseBranchPrefix>
                         <hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
