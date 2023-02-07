@@ -77,8 +77,8 @@
                 <version>${jgitflow-maven-plugin.version}</version>
                 <configuration>
                     <flowInitContext>
-                        <masterBranchName>fork_master</masterBranchName>
-                        <developBranchName>fork_develop</developBranchName>
+                        <masterBranchName>master</masterBranchName>
+                        <developBranchName>develop</developBranchName>
                         <featureBranchPrefix>feature-</featureBranchPrefix>
                         <releaseBranchPrefix>release-</releaseBranchPrefix>
                         <hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
